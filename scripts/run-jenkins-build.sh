@@ -71,7 +71,7 @@ bulklog=${HOME}/pbulk/bulklog
 packages=${HOME}/pbulk/packages
 prefix=${HOME}/pbulk/pkg
 pkgsrc=${WORKSPACE}/pkgsrc
-pkgdb=${HOME}/pbulk/pkg/.pkgdb
+pkgdb=${HOME}/pbulk/pkg/pkgdb
 varbase=${HOME}/pbulk/pkg/var
 # These variables are set by expanding variables, so need to be reset.
 make=${HOME}/pbulk/pkg/bin/bmake
