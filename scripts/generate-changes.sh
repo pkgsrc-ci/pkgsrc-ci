@@ -12,5 +12,4 @@ else
 fi
 
 git log --name-status --pretty=format:'%H %an' ${start}..${end} \
-    | awk -f $(dirname $0)/calculate-changes.awk \
-    | tee ${WORKSPACE_TMP}/changes.txt
+    | awk -f $(dirname $0)/calculate-changes.awk
