@@ -87,8 +87,8 @@ if [ ! -f ${HOME}/pbulk/bootstrap.tar.gz ]; then
 	    --mk-fragment=${HOME}/pbulk/mk-include.conf \
 	    --prefix=${HOME}/pbulk/pkg \
 	    --unprivileged \
-	    --workdir=${WORKSPACE_TMP}/bs.work
-	rm -rf ${WORKSPACE_TMP}/bs.work
+	    --workdir=${HOME}/pbulk/bs.work
+	rm -rf ${HOME}/pbulk/bs.work
 fi
 
 #
