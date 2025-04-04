@@ -61,9 +61,7 @@ cat >${HOME}/pbulk/pbulk-include.conf <<EOF
 master_mode=no
 pkg_rsync_args=
 pkg_rsync_target=
-report_rsync_args=
-report_rsync_target=
-report_recipients="jperkin@pkgsrc.org"
+mail=:
 bootstrapkit=${HOME}/pbulk/bootstrap.tar.gz
 limited_list=${HOME}/pbulk/limited_list
 unprivileged_user=${USER}
@@ -95,3 +93,40 @@ fi
 # Run bulkbuild.
 #
 bulkbuild
+
+#
+# Get list of failed packages.  If empty then we're done.
+#
+#PKGNAME=checkperms-1.12
+#PKG_LOCATION=sysutils/checkperms
+
+awk -F'|' '$2 ~ /^failed/ {print $1}' ${HOME}/pbulk/bulklog/meta/pbuild \
+    > ${WORKSPACE_TMP}/failed_pkg.txt
+if [ ! -s ${WORKSPACE_TMP}/failed_pkg.txt ]; then
+	exit 0
+fi
+
+#
+# Convert PKGNAME to PKGPATH to find if it was triggered by this build, and
+# if so who is responsible.
+#
+awk -F= '
+$1 ~ /^PKGNAME$/ {pkg=$2}
+$1 ~ /^PKG_LOCATION$/ {print pkg " " $2}
+' < ${HOME}/pbulk/bulklog/meta/presolve > ${WORKSPACE_TMP}/pkg_to_path.txt
+
+while read pkg; do
+	awk '/^'${pkg}'/ {print $2}' ${WORKSPACE_TMP}/pkg_to_path.txt
+done < ${WORKSPACE_TMP}/failed_pkg.txt > ${WORKSPACE_TMP}/failed_pkgpath.txt
+
+echo "failed package, who, commit"
+while read pkgpath; do
+	grep ^${pkgpath} ${WORKSPACE_TMP}/changes.txt
+done < ${WORKSPACE_TMP}/failed_pkgpath.txt
+
+cat ${HOME}/pbulk/meta/report.txt | /usr/sbin/sendmail -oi -rjperkin@pkgsrc.org -t <<EOF
+From: jperkin@pkgsrc.org
+To: jperkin@pkgsrc.org
+Subject: bulk build report
+
+EOF
