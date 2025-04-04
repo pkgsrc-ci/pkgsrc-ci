@@ -11,6 +11,15 @@
 
 set -eux
 
+case "$(uname -s)" in
+Linux|NetBSD)
+	PATH=/usr/pkg/sbin:/usr/pkg/bin:/sbin:/bin:/usr/sbin:/usr/bin
+	;;
+SunOS)
+	PATH=/opt/local/sbin:/opt/local/bin:/sbin:/usr/sbin:/usr/bin
+	;;
+esac
+
 # Start with clean temporary directory.
 rm -rf ${WORKSPACE_TMP}
 mkdir -p ${WORKSPACE_TMP}
