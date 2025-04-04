@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 #
 
-set -x
-
-if [ -n "${GIT_COMMIT}" -a -n "${GIT_PREVIOUS_COMMIT}" ]; then
+if [ -n "${GIT_LOG_START}" -a -n "${GIT_LOG_END}" ]; then
+	start=${GIT_LOG_START}
+	end=${GIT_LOG_END}
+elif [ -n "${GIT_COMMIT}" -a -n "${GIT_PREVIOUS_COMMIT}" ]; then
 	start=${GIT_PREVIOUS_COMMIT}
 	end=${GIT_COMMIT}
 else
