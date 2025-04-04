@@ -26,10 +26,10 @@ mkdir -p ${WORKSPACE_TMP}
 
 #
 # Configure pbulk work area.  Some files are kept (e.g. bootstrap), while
-# others are always removed to ensure a completely from-scratch build.
+# others are always removed.
 #
 mkdir -p ${HOME}/pbulk
-rm -rf ${HOME}/pbulk/{bulklog,distfiles,packages,pkg,work}
+rm -rf ${HOME}/pbulk/{bulklog,distfiles,pkg,work}
 mkdir -p ${HOME}/pbulk/{bulklog,distfiles,packages,work}
 
 #
