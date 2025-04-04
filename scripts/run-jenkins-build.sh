@@ -55,6 +55,7 @@ awk '{print $1}' ${WORKSPACE_TMP}/changes.txt \
 #
 cat >${HOME}/pbulk/mk-include.conf <<-EOF
 ALLOW_VULNERABLE_PACKAGES=	yes
+CHECK_SSP=			no
 DISTDIR=			${HOME}/pbulk/distfiles
 FAILOVER_FETCH=			yes
 MAKE_JOBS=			4
