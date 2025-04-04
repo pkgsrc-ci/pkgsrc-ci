@@ -132,14 +132,26 @@ while read pkg; do
 	awk '/^'${pkg}'/ {print $2}' ${WORKSPACE_TMP}/pkg_to_path.txt
 done < ${WORKSPACE_TMP}/failed_pkg.txt > ${WORKSPACE_TMP}/failed_pkgpath.txt
 
-echo "failed package, who, commit"
+recip="jperkin@pkgsrc.org"
+
+cat >${WORKSPACE_TMP}/failures.txt <<EOF
+The following changes have been identified as causing a regression:
+
+EOF
 while read pkgpath; do
 	grep ^${pkgpath} ${WORKSPACE_TMP}/changes.txt
-done < ${WORKSPACE_TMP}/failed_pkgpath.txt
+done < ${WORKSPACE_TMP}/failed_pkgpath.txt \
+	| while read pkgpath committer sha; do
+		recip="${recip},${committer}@pkgsrc.org"
+		echo "${pkgpath}  <${committer}>  https://github.com/NetBSD/pkgsrc/commit/${sha}" >>${WORKSPACE_TMP}/failures.txt
+	done
+echo "" >>${WORKSPACE_TMP}/failures.txt
 
-cat ${HOME}/pbulk/meta/report.txt | /usr/sbin/sendmail -oi -rjperkin@pkgsrc.org -t <<EOF
+cat ${WORKSPACE_TMP}/failures.txt ${HOME}/pbulk/meta/report.txt | /usr/sbin/sendmail -oi -rjperkin@pkgsrc.org -t <<EOF
 From: jperkin@pkgsrc.org
 To: jperkin@pkgsrc.org
 Subject: bulk build report
+
+Would email ${recip}
 
 EOF
