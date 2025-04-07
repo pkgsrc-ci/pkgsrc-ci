@@ -132,8 +132,6 @@ while read pkg; do
 	awk '/^'${pkg}'/ {print $2}' ${WORKSPACE_TMP}/pkg_to_path.txt
 done < ${WORKSPACE_TMP}/failed_pkg.txt > ${WORKSPACE_TMP}/failed_pkgpath.txt
 
-recip="jperkin@pkgsrc.org"
-
 cat >${WORKSPACE_TMP}/failures.txt <<EOF
 The following changes have been identified as causing a regression:
 
@@ -142,16 +140,19 @@ while read pkgpath; do
 	grep ^${pkgpath} ${WORKSPACE_TMP}/changes.txt
 done < ${WORKSPACE_TMP}/failed_pkgpath.txt \
 	| while read pkgpath committer sha; do
-		recip="${recip},${committer}@pkgsrc.org"
+		echo "${committer}@pkgsrc.org" >>${WORKSPACE_TMP}/committers.txt
 		echo "${pkgpath}  <${committer}>  https://github.com/NetBSD/pkgsrc/commit/${sha}" >>${WORKSPACE_TMP}/failures.txt
 	done
 echo "" >>${WORKSPACE_TMP}/failures.txt
 
-cat ${WORKSPACE_TMP}/failures.txt ${HOME}/pbulk/meta/report.txt | /usr/sbin/sendmail -oi -rjperkin@pkgsrc.org -t <<EOF
+recip=$(sort ${WORKSPACE_TMP}/committers.txt | uniq | paste -s -d, -)
+msg=$(cat ${WORKSPACE_TMP}/failures.txt ${HOME}/pbulk/meta/report.txt)
+/usr/sbin/sendmail -oi -rjperkin@pkgsrc.org -t <<EOF
 From: jperkin@pkgsrc.org
 To: jperkin@pkgsrc.org
 Subject: bulk build report
 
 Would email ${recip}
 
+${msg}
 EOF
